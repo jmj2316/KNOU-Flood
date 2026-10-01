@@ -52,8 +52,7 @@ axs[0].set_ylabel('stations with ≥180 observed days in the year')
 h, l = axs[0].get_legend_handles_labels(); fig.legend(h, l, loc='lower left', ncol=6, frameon=False, fontsize=9.5, bbox_to_anchor=(0.05, 0.0), labelcolor=INK2, columnspacing=1.6)
 import matplotlib.patches as mp
 fig.legend(handles=[mp.Patch(color='#e6f4e6', label='train 1980–2019'), mp.Patch(color='#dcebf7', label='validation 2020'), mp.Patch(color='#fde6d3', label='test 2021–2023 (2024 partial)')], loc='lower left', ncol=3, frameon=False, fontsize=9.5, bbox_to_anchor=(0.05, 0.055), labelcolor=INK2, columnspacing=1.6)
-fig.text(0.06, 0.965, 'Streamflow observations available over time', fontsize=14, fontweight='bold', va='top'); fig.text(0.06, 0.905, 'Caravan v1.6 + GRDC-Caravan stations; the drop after 2018 is why only ≈2,100 stations can be scored in the test years', fontsize=10, color=INK2, va='top')
-fig.savefig(f'{OUT}/figA_gauges_per_year.png', dpi=200); plt.close(fig)
+fig.savefig(f'{OUT}/figA_gauges_per_year.png', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 
 # ======================= helper: map + CDF-by-continent =======================
 def map_cdf(values, sel, fname, title, sub, cmap, norm, cbar_label, xlab, ext, xlim, legend_loc='lower right'):
@@ -69,8 +68,7 @@ def map_cdf(values, sel, fname, title, sub, cmap, norm, cbar_label, xlab, ext, x
     xa = np.sort(allv); ax2.plot(xa, np.arange(1, len(xa) + 1) / len(xa), color=INK, lw=2.6, label=f'Global (n={len(xa):,})', zorder=5)
     md, p90 = np.median(allv), np.percentile(allv, 90); ax2.axvline(md, color=MUTED, lw=1, ls=(0, (4, 3))); ax2.text(md, 0.02, f' median\n {md:.3f}', color=INK2, fontsize=8.5, va='bottom')
     ax2.set_xlim(*xlim); ax2.set_ylim(0, 1.02); ax2.set_xlabel(xlab); ax2.set_ylabel('CDF'); ax2.grid(color=GRID, lw=0.8); ax2.set_axisbelow(True); ax2.legend(frameon=False, fontsize=8.5, loc=legend_loc, labelcolor=INK2)
-    fig.text(0.02, 0.965, title, fontsize=14, fontweight='bold', va='top'); fig.text(0.02, 0.905, sub, fontsize=10, color=INK2, va='top')
-    fig.savefig(f'{OUT}/{fname}', dpi=200); plt.close(fig)
+    fig.savefig(f'{OUT}/{fname}', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
     return md, p90
 
 # ======================= Fig B: ERA5-Land vs HRES precipitation distance (same diagnostic as the AIFL paper) =======================

@@ -22,8 +22,5 @@ for r, kind in enumerate(('single', 'dual')):
         ax.set_title(f'{"Observed return levels" if kind == "single" else "Model-simulated return levels"} · lead {lead} d', loc='left', fontsize=10.5)
         if c == 0: ax.set_ylabel('CSI = hits / (hits + misses + false alarms)')
 fig.legend(loc='upper center', bbox_to_anchor=(0.5, 0.9), ncol=3, fontsize=9, frameon=False)
-fig.text(0.055, 0.985, 'Flood-event detection: member-based event forecasts vs. ensemble-mean and deterministic forecasts', fontsize=14, fontweight='bold', va='top')
-fig.text(0.055, 0.955, 'Test 2021 - 2023-12, pooled over stations and days, exact-day matching.  Member-based: an event is forecast when at least a fraction p* of the 16 members exceeds the return level;\np* (and the spread factor lambda) are tuned on 2020 only.  Bars: min-max over seeds.',
-         fontsize=9.3, color=INK2, va='top')
 for c in range(3): axs[0, c].set_ylim(2e-3, 0.5); axs[1, c].set_ylim(0.04, 0.45)
-fig.savefig(f'{R}/figs/figH_event_members.png', dpi=140); print('saved')
+fig.savefig(f'{R}/figs/figH_event_members.png', dpi=140, bbox_inches='tight', pad_inches=0.12); print('saved')

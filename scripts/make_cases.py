@@ -37,8 +37,7 @@ for r, gid in enumerate(order):
     for k in range(2): axs[r, k].set_ylim(0, ymax * 1.28)
     axs[r, 0].text(-0.055, 1.17 if r > 0 else 1.17, f"{c['stratum']}: {nice(c['name'])} — {c['country']} (area {c['area']:,.0f} km²)", transform=axs[r, 0].transAxes, fontsize=10.5, color=INK, fontweight='bold', va='bottom')
 h, l = axs[0, 0].get_legend_handles_labels(); fig.legend(h, l, loc='upper left', ncol=4, frameon=False, fontsize=9.5, bbox_to_anchor=(0.055, 0.915), labelcolor=INK2)
-fig.text(0.06, 0.985, 'Forecast case studies, 2022', fontsize=14, fontweight='bold', va='top'); fig.text(0.06, 0.957, 'One randomly drawn station per regime (not selected by skill) · forecast issued 1 / 7 days before the valid day', fontsize=10, color=INK2, va='top'); fig.text(0.06, 0.937, 'Scores are for the plotted year. Arid station: flows stay below 0.3 mm/day, so its scores are not meaningful.', fontsize=10, color=INK2, va='top')
-fig.savefig(f'{R}/figs/figD_case_studies_2022.png', dpi=200); plt.close(fig)
+fig.savefig(f'{R}/figs/figD_case_studies_2022.png', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 # also print the yearly numbers so the text can quote them
 for gid in order:
     i = list(F['basins']).index(gid); obs = F['obs'][i][sel]

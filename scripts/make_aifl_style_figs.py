@@ -38,8 +38,7 @@ ax.legend(loc='lower left', frameon=True, framealpha=0.9, edgecolor=GRID, fontsi
 for rect, sel, col, ttl in (([0.60, 0.66, 0.16, 0.15], pre & np.isfinite(area), '#3a8f5c', 'pre-training'), ([0.81, 0.66, 0.16, 0.15], ev, '#d1531a', 'fine-tuning / test')):
     ia = fig.add_axes(rect); ia.hist(np.log10(area[sel]), bins=np.linspace(-0.5, 6.7, 40), color=col, alpha=0.85, edgecolor='none'); ia.set_title(ttl, fontsize=8.5, loc='left', pad=2); ia.tick_params(labelsize=7.5); ia.set_xlabel('log$_{10}$ area (km$^2$)', fontsize=8, labelpad=1)
     ia.set_yticks([]); ia.spines['left'].set_visible(False)
-fig.text(0.02, 0.97, 'Global distribution of the streamflow stations across the experimental stages', fontsize=14, fontweight='bold', va='top'); fig.text(0.02, 0.915, f'{len(names):,} stations in the data set, {int(pre.sum()):,} used for pre-training; insets: frequency distribution of catchment areas', fontsize=10, color=INK2, va='top')
-fig.savefig(f'{OUT}/fig_stage_map.png', dpi=170); plt.close(fig)
+fig.savefig(f'{OUT}/fig_stage_map.png', dpi=170, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 # ---------------- Fig. 5 / 6 data
 def avg(names_, key): return np.nanmean([np.load(f'{R}/results/{n}_perbasin.npz')[key] for n in names_], 0)
 NEW, BASE = ['s424fsm_s0', 's424fsm_s1', 's424fsm_s2'], ['b2d_gct', 'b2d_s1', 'b2d_s2']; bas = np.load(f'{R}/results/s424fsm_s0_perbasin.npz')['basins']
@@ -51,9 +50,7 @@ for ax, (m, lab, rng_, ideal) in zip(axs, (('kge', "KGE$'$", (-1, 1), 1.0), ('ns
     ax2 = ax.twinx(); x = np.sort(np.clip(a2, *rng_)); ax2.plot(x, np.arange(1, len(x) + 1) / len(x), color=BLUE, lw=2); xb = np.sort(np.clip(b2, *rng_)); ax2.plot(xb, np.arange(1, len(xb) + 1) / len(xb), color=ORG, lw=1.6, ls='--')
     ax2.set_ylim(0, 1.02); ax2.spines['right'].set_visible(True); ax2.tick_params(labelsize=8); ax.set_xlim(*rng_)
     ax.set_title(f'median {np.nanmedian(a2):.2f}  (baseline {np.nanmedian(b2):.2f})', fontsize=9.5, loc='left', color=INK2)
-fig.text(0.035, 0.975, 'Global performance metrics of KNOU-Flood (LT1, AIFL protocol)', fontsize=13.5, fontweight='bold', va='top')
-fig.text(0.035, 0.885, f'{int(np.isfinite(M["kge"][0]).sum()):,} test basins, mean of 3 seeds. Histograms: station frequency; blue curves: CDF of KNOU-Flood; orange dashed: CDF of the AIFL-recipe baseline; green dashed lines: ideal value.', fontsize=9.5, color=INK2, va='top')
-fig.savefig(f'{OUT}/fig_metric_distributions.png', dpi=170); plt.close(fig)
+fig.savefig(f'{OUT}/fig_metric_distributions.png', dpi=170, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 # ---------------- Fig. 6: KGE' map + CDF by continent
 idx = np.array([np.where(names == b)[0][0] for b in bas]); kge = M['kge'][0]; cs = np.array([cont(lat[i], lon[i]) for i in idx], dtype=object); cs = np.where(np.isin(cs, list(CONT)), cs, None)
 fig = plt.figure(figsize=(15, 5.4)); ax = fig.add_axes([0.01, 0.16, 0.62, 0.68], projection=ccrs.Robinson()); ax.set_extent([-170, 180, -58, 80], ccrs.PlateCarree()); base_map(ax)
@@ -67,5 +64,4 @@ for c, col in CONT.items():
     if len(v) > 5: ca.plot(v, np.arange(1, len(v) + 1) / len(v), color=col, lw=1.8, label=f'{c} (n={len(v)}, median {np.median(v):.2f})')
 v = np.sort(kge[np.isfinite(kge)]); ca.plot(v, np.arange(1, len(v) + 1) / len(v), color='black', lw=2.4, label=f'Global (n={len(v)}, median {np.median(v):.2f})')
 ca.set_xlim(-0.5, 1); ca.set_xlabel("KGE$'$"); ca.set_ylabel('CDF'); ca.grid(color=GRID, lw=0.7); ca.legend(fontsize=8, frameon=False, loc='upper left')
-fig.text(0.015, 0.97, "Global and regional forecast performance (KGE$'$) of KNOU-Flood", fontsize=14, fontweight='bold', va='top'); fig.text(0.015, 0.905, 'Test 2021 - 2023-12, AIFL protocol, LT1, mean of 3 seeds. Right: cumulative distribution by continent.', fontsize=10, color=INK2, va='top')
-fig.savefig(f'{OUT}/fig_kge_map_continent.png', dpi=170); plt.close(fig); print('saved')
+fig.savefig(f'{OUT}/fig_kge_map_continent.png', dpi=170, bbox_inches='tight', pad_inches=0.12); plt.close(fig); print('saved')

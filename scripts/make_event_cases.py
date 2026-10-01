@@ -95,8 +95,5 @@ for k, (cm, x0) in enumerate(((cmB, 0.27), (cmO, 0.62))):
     cax = fig.add_axes([x0, 0.028, 0.23, 0.011]); sm = matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(-9.5, 1.5), cmap=matplotlib.colors.ListedColormap([col(cm, d) for d in np.linspace(-9, 1, 11)]))
     cb = fig.colorbar(sm, cax=cax, orientation='horizontal', ticks=range(-9, 2, 2)); cb.outline.set_visible(False); cb.ax.tick_params(length=0, labelsize=8.5)
     cb.set_label('Issue day relative to the observed peak (day 0)', fontsize=8.8, color=INK2)
-fig.text(0.03, 0.985, 'Flood-event case studies: every 10-day forecast issued from 9 days before to 1 day after the observed peak', fontsize=14, fontweight='bold', va='top', color=INK)
-fig.text(0.03, 0.958, f'Events drawn at random (one per region) from all test-period (2021 - 2023-12) observed peaks above the observed 10-yr level — not selected on model skill.  Seed {TAG[1:]} models, ensemble-mean point forecasts, trajectory protocol.',
-         fontsize=9.5, va='top', color=INK2)
-fig.savefig(f'{R}/figs/figF_event_cases.png', dpi=140)
+fig.savefig(f'{R}/figs/figF_event_cases.png', dpi=140, bbox_inches='tight', pad_inches=0.12)
 print('saved', [(basins[g], str(dates[pk])) for g, pk, _ in picks])

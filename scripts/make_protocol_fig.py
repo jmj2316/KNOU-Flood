@@ -18,8 +18,4 @@ for ax, m, ttl, yl in zip(axs, ('kge', 'nse', 'rmse'), ("KGE' (higher is better)
     if m == 'rmse': ax.axhline(0.715, color=INK, lw=0.8, ls=':'); ax.text(10, 0.723, 'climatology', ha='right', fontsize=8.5, color=INK2)
     ax.set_title(ttl, loc='left', fontsize=10.5); ax.set_xlabel('forecast lead time (days)'); ax.set_ylabel(yl); ax.set_xticks(L); ax.grid(axis='y', color=GRID, lw=0.7)
 h, l = axs[0].get_legend_handles_labels(); fig.legend(h, l, loc='upper center', bbox_to_anchor=(0.5, 0.83), ncol=3, fontsize=9, frameon=False)
-fig.text(0.05, 0.985, "The lead-time decay in the AIFL protocol is largely an input-protocol effect", fontsize=14, fontweight='bold', va='top')
-fig.text(0.05, 0.935, "AIFL protocol: the lead-k forecast fills the whole 180/424-day input window.  Operational protocol: past days use lead-1 forecasts, the forecast days use their own lead.\n"
-         "Same weights, same stations (test 2021 - 2023-12, 3 seeds, bands = min-max).  This is our reading of AIFL's lead-sensitivity test (the paper does not spell out the replacement);\n"
-         "our re-implementation reproduces its pattern (NSE < 0 beyond LT5).", fontsize=9, color=INK2, va='top')
-fig.savefig(f'{R}/figs/figI_protocol_effect.png', dpi=140); print('saved')
+fig.savefig(f'{R}/figs/figI_protocol_effect.png', dpi=140, bbox_inches='tight', pad_inches=0.12); print('saved')

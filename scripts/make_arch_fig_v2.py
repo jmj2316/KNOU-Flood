@@ -14,7 +14,7 @@ def box(x, y, w, h, fc='white', ec=LINE, lw=0.7, r=1.2, **kw): ax.add_patch(Fanc
 def arrow(x0, y0, x1, y1, c=LINE, lw=0.8, ms=5, rad=0.0): ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle='-|>', mutation_scale=ms, lw=lw, color=c, shrinkA=0, shrinkB=0, connectionstyle=f'arc3,rad={rad}'))
 def txt(x, y, s, size=6.2, c=INK, ha='left', va='center', w='normal', **kw): ax.text(x, y, s, fontsize=size, color=c, ha=ha, va=va, fontweight=w, **kw)
 rng = np.random.default_rng(3)
-txt(0.4, 108.4, 'a', 9, w='bold'); txt(4.0, 108.4, 'Architecture and ensemble generation', 7.2, w='bold'); txt(0.4, 37.4, 'b', 9, w='bold'); txt(4.0, 37.4, 'Training and evaluation', 7.2, w='bold')
+txt(0.4, 108.4, 'a', 9, w='bold'); txt(0.4, 37.4, 'b', 9, w='bold');
 # ---------------------------------------------------------------- inputs
 txt(1, 104.0, 'Dynamic forcing', 6.8, w='bold'); txt(1, 101.1, '14 channels $\\times$ 424 days', 5.6, c=INK2)
 y, rh, x0, xw = 98.4, 1.9, 1, 18

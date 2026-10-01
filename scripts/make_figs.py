@@ -39,9 +39,7 @@ for i, (lead, ttl) in enumerate(((1, 'Lead 1 day'), (10, 'Lead 10 days'))):
             bbox=dict(facecolor=SURF, edgecolor='none', alpha=0.85, pad=3))
 cax = fig.add_axes([0.32, 0.075, 0.36, 0.013]); cb = fig.colorbar(sc, cax=cax, orientation='horizontal', extend='both'); cb.outline.set_visible(False)
 cb.set_label('Δ KGE′   (blue: KNOU-Flood better · red: AIFL recipe better · clipped at ±0.3)', color=INK2, fontsize=9); cb.ax.tick_params(labelsize=9, length=0)
-fig.text(0.03, 0.985, 'Where KNOU-Flood beats the AIFL-style baseline', fontsize=14, fontweight='bold', va='top', color=INK)
-fig.text(0.03, 0.960, 'Test 2021–2023, trajectory protocol, median of 3 independently trained seeds per station (only stations with observations in the test years are shown)', fontsize=10, va='top', color=INK2)
-fig.savefig(f'{OUT}/fig1_map_delta_kge.png', dpi=200); plt.close(fig)
+fig.savefig(f'{OUT}/fig1_map_delta_kge.png', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 
 # ======================= Fig 2: skill vs lead time =======================
 leads = np.arange(1, 11); fig, axs = plt.subplots(1, 3, figsize=(13, 4.3)); fig.subplots_adjust(left=0.05, right=0.985, bottom=0.17, top=0.8, wspace=0.22)
@@ -61,8 +59,7 @@ h = [plt.Line2D([], [], color=C_OURS, lw=2.4, marker='o', ms=4.5, label='KNOU-Fl
      plt.Line2D([], [], color=C_AIFL, lw=2, marker='o', ms=4, label='AIFL-style baseline (3 seeds, band = min–max)'),
      plt.Line2D([], [], color=C_FUSED, lw=2, marker='o', ms=4, label='AIFL recipe, hidden 1024 (1 seed)')]
 fig.legend(handles=h, loc='lower center', ncol=3, frameon=False, fontsize=9, bbox_to_anchor=(0.5, -0.005), labelcolor=INK2)
-fig.text(0.05, 0.965, 'Forecast skill by lead time', fontsize=14, fontweight='bold', va='top'); fig.text(0.05, 0.905, 'Median over 2,113 stations, test 2021–2023, operational (trajectory) protocol', fontsize=10, color=INK2, va='top')
-fig.savefig(f'{OUT}/fig2_skill_vs_lead.png', dpi=200); plt.close(fig)
+fig.savefig(f'{OUT}/fig2_skill_vs_lead.png', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 
 # ======================= Fig 3: per-station paired scatter =======================
 fig, axs = plt.subplots(1, 3, figsize=(13, 4.6)); fig.subplots_adjust(left=0.05, right=0.985, bottom=0.14, top=0.8, wspace=0.22)
@@ -73,6 +70,5 @@ for ax, lead in zip(axs, (1, 5, 10)):
     ax.set_xlabel('AIFL-style baseline, KGE′'); ax.set_ylabel('KNOU-Flood, KGE′') if lead == 1 else None
     ax.set_title(f'Lead {lead} day' + ('s' if lead > 1 else ''), loc='left', fontsize=11); 
     ax.text(0.03, 0.97, f'{np.mean(y[m] > x[m]) * 100:.0f}% of stations above the line\nmedian: {np.median(x[m]):.2f} → {np.median(y[m]):.2f}\n({int(m.sum() - shown.sum())} stations below −0.6 not drawn)', transform=ax.transAxes, va='top', fontsize=9.5, color=INK2)
-fig.text(0.05, 0.965, 'Station by station: KNOU-Flood vs the AIFL-style baseline', fontsize=14, fontweight='bold', va='top'); fig.text(0.05, 0.905, 'Each dot is one station (median of 3 seeds); above the diagonal = KNOU-Flood better; axes cut at −0.6', fontsize=10, color=INK2, va='top')
-fig.savefig(f'{OUT}/fig3_paired_scatter.png', dpi=200); plt.close(fig)
+fig.savefig(f'{OUT}/fig3_paired_scatter.png', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 print('done')

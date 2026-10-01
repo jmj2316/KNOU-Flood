@@ -27,6 +27,4 @@ line(axs[1, 0], 'spread_rmse', 'Spread / RMSE of the ensemble mean (1 = reliable
 line(axs[1, 1], 'cover80', 'Coverage of the q10-q90 interval (dotted: 12/17 for 16 members)', 'fraction', ref=12 / 17)
 line(axs[1, 2], 'outside', 'Observation outside the ensemble range (dotted: ideal 2/17)', 'fraction', ref=2 / 17)
 fig.legend(handles=[plt.Line2D([], [], color=STY[n][0], ls=STY[n][1], marker=STY[n][2], label=STY[n][3]) for n in STY], loc='upper center', bbox_to_anchor=(0.5, 0.945), ncol=3, fontsize=9, frameon=False)
-fig.text(0.05, 0.985, 'Probabilistic forecast quality: KNOU-Flood vs. probabilistic versions of the AIFL-recipe baseline', fontsize=14, fontweight='bold', va='top')
-fig.text(0.05, 0.955, f'Test 2021 - 2023-12, 16 members, seeds {seeds}; lambda and the dressing residuals are fitted on the validation year 2020 only; point forecasts (ensemble mean) are unchanged by the spread scaling.', fontsize=9.5, color=INK2, va='top')
-fig.savefig(f'{R}/figs/figG_probabilistic.png', dpi=140); print('saved')
+fig.savefig(f'{R}/figs/figG_probabilistic.png', dpi=140, bbox_inches='tight', pad_inches=0.12); print('saved')
