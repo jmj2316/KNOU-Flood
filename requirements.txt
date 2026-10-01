@@ -1,0 +1,11 @@
+torch==2.5.1
+numpy==1.26.4
+pandas==2.3.3
+xarray==2025.6.1
+scipy==1.14.1
+matplotlib==3.10.8
+cartopy==0.25.0
+shapely==2.1.2
+gcsfs
+zarr
+netCDF4

@@ -1,0 +1,8 @@
+data/
+logs/
+ckpt/
+figs/
+__pycache__/
+*.pyc
+*.bak
+results/dump_*.npz
