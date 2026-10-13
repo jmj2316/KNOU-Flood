@@ -61,3 +61,6 @@ Model names in `weights/` and `results/`: `s424fsm_s{0,1,2}` = KNOU-Flood (seed 
 * The scripts were written for the paper's cluster; paths are relative to `KNOU_FLOOD_ROOT`, but the job queue and monitoring helpers are not included.
 * Absolute scores are not comparable with the published AIFL numbers (different station list, period and training budget); see the paper.
 * License: to be specified before the public release.
+
+## License
+MIT (code, trained weights and per-station results); see `LICENSE`. The input data sets keep the licenses of their original publishers (Caravan, GRDC-Caravan, Caravan-MultiMet).
