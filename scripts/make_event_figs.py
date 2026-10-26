@@ -1,14 +1,15 @@
 """Event-forecast figure from results/event_members_report.json -> figs/figH_event_members.png  (CSI vs return period, test, seeds pooled; bars = min-max over seeds)"""
 import os
 ROOT = os.environ.get('KNOU_FLOOD_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FIGS = os.environ.get('KNOU_FLOOD_FIGS', ROOT + '/figs'); os.makedirs(FIGS, exist_ok=True)
 import json, numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
 R = ROOT; J = json.load(open(f'{R}/results/event_members_report.json')); RPS = (1.5, 2, 5, 10, 20, 50); LEADS = (1, 5, 10)
 SURF, INK, INK2, MUTED, GRID = '#fcfcfb', '#0b0b0b', '#52514e', '#898781', '#e1e0d9'
-plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9.5, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK2, 'xtick.color': INK2, 'ytick.color': INK2, 'text.color': INK,
+plt.rcParams.update({'pdf.fonttype': 42, 'font.family': 'DejaVu Sans', 'font.size': 9.5, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK2, 'xtick.color': INK2, 'ytick.color': INK2, 'text.color': INK,
                      'figure.facecolor': SURF, 'axes.facecolor': SURF, 'savefig.facecolor': SURF, 'axes.spines.top': False, 'axes.spines.right': False})
 BLUE, BLUE2, BLUE3, ORG, ORG2, ORG3 = '#184f95', '#2a78d6', '#86b6ef', '#eb6834', '#a8471c', '#f2a97f'
 SYS = [('ours_mc_infl|tuned', BLUE, '-', 'o', 'KNOU-Flood, member-based (MC dropout, spread x lambda)'), ('ours_raw|tuned', BLUE2, '-', 's', 'KNOU-Flood, member-based (as trained)'), ('ours_mean|det', BLUE3, '--', '^', 'KNOU-Flood, ensemble mean'),
-       ('b2d_mc|tuned', ORG, '-', 's', 'AIFL recipe, MC-dropout members'), ('b2d_dress_sqrt|tuned', ORG2, ':', 'd', 'AIFL recipe, residual-dressed members'), ('b2d_det|det', ORG3, '--', '^', 'AIFL recipe, deterministic')]
+       ('b2d_mc|tuned', ORG, '-', 's', 'Baseline, MC-dropout members'), ('b2d_dress_sqrt|tuned', ORG2, ':', 'd', 'Baseline, residual-dressed members'), ('b2d_det|det', ORG3, '--', '^', 'Baseline, deterministic')]
 have = lambda k, key: f'{k}|1|1.5|{key.split("|")[0]}|{key.split("|")[1]}' in J
 SYS = [s for s in SYS if have('single', s[0])]
 fig, axs = plt.subplots(2, 3, figsize=(16, 9), sharey='row'); fig.subplots_adjust(left=0.055, right=0.985, top=0.82, bottom=0.075, hspace=0.3, wspace=0.08)
@@ -23,4 +24,4 @@ for r, kind in enumerate(('single', 'dual')):
         if c == 0: ax.set_ylabel('CSI = hits / (hits + misses + false alarms)')
 fig.legend(loc='upper center', bbox_to_anchor=(0.5, 0.9), ncol=3, fontsize=9, frameon=False)
 for c in range(3): axs[0, c].set_ylim(2e-3, 0.5); axs[1, c].set_ylim(0.04, 0.45)
-fig.savefig(f'{R}/figs/figH_event_members.png', dpi=140, bbox_inches='tight', pad_inches=0.12); print('saved')
+fig.savefig(f'{FIGS}/figH_event_members.png', dpi=300, bbox_inches='tight', pad_inches=0.12); fig.savefig(f'{FIGS}/figH_event_members.pdf', bbox_inches='tight', pad_inches=0.12); print('saved')

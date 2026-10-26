@@ -1,5 +1,6 @@
 import os
 ROOT = os.environ.get('KNOU_FLOOD_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FIGS = os.environ.get('KNOU_FLOOD_FIGS', ROOT + '/figs'); os.makedirs(FIGS, exist_ok=True)
 import glob, numpy as np, pandas as pd, matplotlib, warnings, sys
 warnings.filterwarnings('ignore'); matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ from scipy.stats import wasserstein_distance
 sys.path.insert(0, ROOT + '/src'); import data as D
 R = ROOT; OUT = f'{R}/figs'
 SURF, INK, INK2, MUTED, GRID = '#fcfcfb', '#0b0b0b', '#52514e', '#898781', '#e1e0d9'
-plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 10, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK2, 'xtick.color': INK2, 'ytick.color': INK2, 'text.color': INK,
+plt.rcParams.update({'pdf.fonttype': 42, 'font.family': 'DejaVu Sans', 'font.size': 10, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK2, 'xtick.color': INK2, 'ytick.color': INK2, 'text.color': INK,
                      'figure.facecolor': SURF, 'axes.facecolor': SURF, 'savefig.facecolor': SURF, 'axes.spines.top': False, 'axes.spines.right': False})
 # continent -> colour, fixed entity mapping (categorical slots 1..6)
 CONT = {'North America': '#2a78d6', 'Europe': '#eb6834', 'Oceania': '#1baf7a', 'Africa': '#eda100', 'South America': '#e87ba4', 'Asia': '#008300'}
@@ -52,7 +53,7 @@ axs[0].set_ylabel('stations with ≥180 observed days in the year')
 h, l = axs[0].get_legend_handles_labels(); fig.legend(h, l, loc='lower left', ncol=6, frameon=False, fontsize=9.5, bbox_to_anchor=(0.05, 0.0), labelcolor=INK2, columnspacing=1.6)
 import matplotlib.patches as mp
 fig.legend(handles=[mp.Patch(color='#e6f4e6', label='train 1980–2019'), mp.Patch(color='#dcebf7', label='validation 2020'), mp.Patch(color='#fde6d3', label='test 2021–2023 (2024 partial)')], loc='lower left', ncol=3, frameon=False, fontsize=9.5, bbox_to_anchor=(0.05, 0.055), labelcolor=INK2, columnspacing=1.6)
-fig.savefig(f'{OUT}/figA_gauges_per_year.png', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
+fig.savefig(f'{FIGS}/figA_gauges_per_year.png', dpi=300, bbox_inches='tight', pad_inches=0.12); fig.savefig(f'{FIGS}/figA_gauges_per_year.pdf', bbox_inches='tight', pad_inches=0.12); plt.close(fig)
 
 # ======================= helper: map + CDF-by-continent =======================
 def map_cdf(values, sel, fname, title, sub, cmap, norm, cbar_label, xlab, ext, xlim, legend_loc='lower right'):
@@ -68,7 +69,7 @@ def map_cdf(values, sel, fname, title, sub, cmap, norm, cbar_label, xlab, ext, x
     xa = np.sort(allv); ax2.plot(xa, np.arange(1, len(xa) + 1) / len(xa), color=INK, lw=2.6, label=f'Global (n={len(xa):,})', zorder=5)
     md, p90 = np.median(allv), np.percentile(allv, 90); ax2.axvline(md, color=MUTED, lw=1, ls=(0, (4, 3))); ax2.text(md, 0.02, f' median\n {md:.3f}', color=INK2, fontsize=8.5, va='bottom')
     ax2.set_xlim(*xlim); ax2.set_ylim(0, 1.02); ax2.set_xlabel(xlab); ax2.set_ylabel('CDF'); ax2.grid(color=GRID, lw=0.8); ax2.set_axisbelow(True); ax2.legend(frameon=False, fontsize=8.5, loc=legend_loc, labelcolor=INK2)
-    fig.savefig(f'{OUT}/{fname}', dpi=200, bbox_inches='tight', pad_inches=0.12); plt.close(fig)
+    fig.savefig(f'{FIGS}/{fname}', dpi=300, bbox_inches='tight', pad_inches=0.12); fig.savefig(f'{FIGS}/' + fname.replace('.png', '.pdf'), bbox_inches='tight', pad_inches=0.12); plt.close(fig)
     return md, p90
 
 # ======================= Fig B: ERA5-Land vs HRES precipitation distance (same diagnostic as the AIFL paper) =======================
@@ -88,7 +89,7 @@ def sav(names_, k): return np.nanmean([np.load(f'{R}/results/{n}_perbasin.npz')[
 DIV = LinearSegmentedColormap.from_list('div', ['#a32828', '#e34948', '#f2a9a8', '#f0efec', '#9ec5f4', '#3987e5', '#184f95'])
 for lead in (1, 10):
     d = sav(['s424fsm_s0', 's424fsm_s1', 's424fsm_s2'], f'traj{lead}_kge') - sav(['b2d_gct', 'b2d_s1', 'b2d_s2'], f'traj{lead}_kge')
-    map_cdf(d, np.arange(len(ev)) if False else ev, f'figC_dkge_lead{lead}_map_cdf.png', f'Skill gain over the AIFL-style baseline, lead {lead} day' + ('s' if lead > 1 else ''),
-            'Δ KGE′ = KNOU-Flood − baseline, median of 3 seeds, test 2021–2023; CDF curves to the right of 0 mean KNOU-Flood is better', DIV, TwoSlopeNorm(0, -0.3, 0.3),
-            'Δ KGE′   (blue: KNOU-Flood better · red: baseline better)', 'Δ KGE′', 'both', (-0.5, 0.9), legend_loc='upper left')
+    map_cdf(d, np.arange(len(ev)) if False else ev, f'figC_dkge_lead{lead}_map_cdf.png', f'Skill gain over the baseline, lead {lead} day' + ('s' if lead > 1 else ''),
+            'Δ KGE = KNOU-Flood − baseline, median of 3 seeds, test 2021–2023; CDF curves to the right of 0 mean KNOU-Flood is better', DIV, TwoSlopeNorm(0, -0.3, 0.3),
+            'Δ KGE   (blue: KNOU-Flood better · red: baseline better)', 'Δ KGE', 'both', (-0.5, 0.9), legend_loc='upper left')
 print('done')

@@ -1,6 +1,7 @@
 """Publication-style schematic of KNOU-Flood -> figs/figE_architecture.{pdf,png}   (a: architecture and ensemble generation with a shared prefix; b: training and evaluation timeline)"""
 import os
 ROOT = os.environ.get('KNOU_FLOOD_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FIGS = os.environ.get('KNOU_FLOOD_FIGS', ROOT + '/figs'); os.makedirs(FIGS, exist_ok=True)
 import numpy as np, matplotlib; matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
@@ -8,7 +9,7 @@ R = ROOT
 INK, INK2, LINE = '#1f2933', '#52606d', '#7b8794'
 C = dict(hres='#3b78c4', season='#8d99a6', lead='#e39a47', gc='#2fa07a', stat='#7c6bb0', noise='#cf5560', lstm='#f2dfa2', lstm_e='#c9a43b', shared='#e8eef7', shared_e='#8aa4c8', fc='#bfe8d3', fc_e='#59b58f',
          pre='#4da36f', ft='#e5873a', val='#4a86d9', test='#c9503f')
-plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 6.2, 'text.color': INK, 'axes.edgecolor': LINE, 'pdf.fonttype': 42})
+plt.rcParams.update({'pdf.fonttype': 42, 'font.family': 'DejaVu Sans', 'font.size': 6.2, 'text.color': INK, 'axes.edgecolor': LINE})
 fig = plt.figure(figsize=(6.6, 5.5)); ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 132); ax.set_ylim(0, 110); ax.axis('off')
 def box(x, y, w, h, fc='white', ec=LINE, lw=0.7, r=1.2, **kw): ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle=f'round,pad=0,rounding_size={r}', fc=fc, ec=ec, lw=lw, **kw))
 def arrow(x0, y0, x1, y1, c=LINE, lw=0.8, ms=5, rad=0.0): ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle='-|>', mutation_scale=ms, lw=lw, color=c, shrinkA=0, shrinkB=0, connectionstyle=f'arc3,rad={rad}'))
@@ -88,4 +89,4 @@ txt(x_of(2000), 33.5, 'reanalysis', 5.2, c='white', ha='center') if False else t
 txt(x_of(2000), 33.45, 'reanalysis forcing', 5.0, c=INK2, ha='center') if False else None
 box(1, 2.2, 130, 6.4, fc='#f4f6f9', ec='none', r=0.9)
 txt(66, 5.4, 'Inference: 16 members, output dropout kept active, deviations from the ensemble mean scaled by $\\lambda_j$ (one value per lead, fitted on 2020)', 5.2, ha='center')
-fig.savefig(f'{R}/figs/figE_architecture.pdf'); fig.savefig(f'{R}/figs/figE_architecture.png', dpi=220); print('saved')
+fig.savefig(f'{FIGS}/figE_architecture.pdf'); fig.savefig(f'{FIGS}/figE_architecture.png', dpi=300); print('saved')

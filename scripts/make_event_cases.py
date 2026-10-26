@@ -1,9 +1,10 @@
-"""AIFL-Fig.-style flood-event case studies: for a chosen event, every 10-day forecast issued from 9 days before to 1 day after the observed peak,
+"""Flood-event case studies: for a chosen event, every 10-day forecast issued from 9 days before to 1 day after the observed peak,
 colored by issue day, with observed and model-simulated return levels.  Events are drawn AT RANDOM (seeded) from all test-period observed peaks
->= the observed 10-yr level, one per region -- never selected on model skill.  Point forecast = ensemble mean of KNOU-Flood (seed 1) and, beside it, the AIFL-recipe baseline (seed 1).
+>= the observed 10-yr level, one per region -- never selected on model skill.  Point forecast = ensemble mean of KNOU-Flood (seed 1) and, beside it, the baseline (seed 1).
 usage: make_event_cases.py [seed_tag s1] """
 import os
 ROOT = os.environ.get('KNOU_FLOOD_ROOT', os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+FIGS = os.environ.get('KNOU_FLOOD_FIGS', ROOT + '/figs'); os.makedirs(FIGS, exist_ok=True)
 import sys, glob, numpy as np, pandas as pd, matplotlib, matplotlib.dates as mdates, warnings
 warnings.filterwarnings('ignore'); matplotlib.use('Agg')
 import matplotlib.pyplot as plt, cartopy.crs as ccrs, cartopy.feature as cfeat
@@ -16,7 +17,7 @@ T = np.load(f'{R}/data/arrays/targets.npz', allow_pickle=True); tn = list(T['nam
 rd = lambda kind: pd.concat([pd.read_csv(f) for f in glob.glob(f'{R}/data/caravan/**/attributes_{kind}_*.csv', recursive=True)]).drop_duplicates('gauge_id').set_index('gauge_id')
 oth = rd('other').reindex(basins); area = oth.area.values; lat = oth.gauge_lat.values; lon = oth.gauge_lon.values
 SURF, INK, INK2, MUTED, GRID = '#fcfcfb', '#0b0b0b', '#52514e', '#898781', '#e1e0d9'; C_OURS, C_BASE, C_SIM = '#2a78d6', '#eb6834', '#1baf7a'
-plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 9.5, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK2, 'xtick.color': INK2, 'ytick.color': INK2, 'text.color': INK,
+plt.rcParams.update({'pdf.fonttype': 42, 'font.family': 'DejaVu Sans', 'font.size': 9.5, 'axes.edgecolor': MUTED, 'axes.labelcolor': INK2, 'xtick.color': INK2, 'ytick.color': INK2, 'text.color': INK,
                      'figure.facecolor': SURF, 'axes.facecolor': SURF, 'savefig.facecolor': SURF, 'axes.spines.top': False, 'axes.spines.right': False})
 # ---------- candidate events (observations only)
 W = 12; cands = []
@@ -57,7 +58,7 @@ for r, (g, pk, thr) in enumerate(picks):
     ax.scatter([lon[g]], [lat[g]], s=70, color='#d1531a', edgecolors='white', linewidths=1.0, transform=ccrs.PlateCarree(), zorder=5)
     ax.set_title(f"{str(oth.gauge_name.values[g]).title()}\n{oth.country.values[g]} · {area[g]:,.0f} km²\npeak {str(pdate)} · {region(g)}", loc='left', fontsize=9.5, color=INK, pad=5)
     ymax = 0; axs = []
-    for k, (nm, Z, cm, who) in enumerate((('A', A, cmB, 'KNOU-Flood (ensemble mean)'), ('B', B, cmO, 'AIFL-recipe baseline'))):
+    for k, (nm, Z, cm, who) in enumerate((('A', A, cmB, 'KNOU-Flood (ensemble mean)'), ('B', B, cmO, 'Baseline'))):
         ax = fig.add_subplot(gs[r, 1 + k], sharey=axs[0] if k else None); axs.append(ax); dd = dates[d_idx].astype('datetime64[ns]')
         ax.plot(dd, ts(obs[g][d_idx]), color=INK, lw=2.0, ls=(0, (5, 2)), label='Observed', zorder=6)
         fc_peak = {}
@@ -89,11 +90,11 @@ for r, (g, pk, thr) in enumerate(picks):
 from matplotlib.lines import Line2D
 fig.legend(handles=[Line2D([], [], color=INK, lw=2, ls=(0, (5, 2)), label='Observed'), Line2D([], [], color=MUTED, lw=1, ls=(0, (4, 3)), label='Observed return levels (Gumbel)'),
                     Line2D([], [], color=C_SIM, lw=1, ls=(0, (4, 3)), label='Return levels of the model own ERA5-driven simulation'), Line2D([], [], color=C_OURS, lw=2, label='Final-model forecasts'),
-                    Line2D([], [], color=C_BASE, lw=2, label='AIFL-recipe baseline forecasts')], loc='upper center', bbox_to_anchor=(0.485, 0.925), ncol=5, fontsize=9, frameon=False)
+                    Line2D([], [], color=C_BASE, lw=2, label='Baseline forecasts')], loc='upper center', bbox_to_anchor=(0.485, 0.925), ncol=5, fontsize=9, frameon=False)
 # colour bars (issue day relative to the observed peak)
 for k, (cm, x0) in enumerate(((cmB, 0.27), (cmO, 0.62))):
     cax = fig.add_axes([x0, 0.028, 0.23, 0.011]); sm = matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(-9.5, 1.5), cmap=matplotlib.colors.ListedColormap([col(cm, d) for d in np.linspace(-9, 1, 11)]))
     cb = fig.colorbar(sm, cax=cax, orientation='horizontal', ticks=range(-9, 2, 2)); cb.outline.set_visible(False); cb.ax.tick_params(length=0, labelsize=8.5)
     cb.set_label('Issue day relative to the observed peak (day 0)', fontsize=8.8, color=INK2)
-fig.savefig(f'{R}/figs/figF_event_cases.png', dpi=140, bbox_inches='tight', pad_inches=0.12)
+fig.savefig(f'{FIGS}/figF_event_cases.png', dpi=300, bbox_inches='tight', pad_inches=0.12); fig.savefig(f'{FIGS}/figF_event_cases.pdf', bbox_inches='tight', pad_inches=0.12)
 print('saved', [(basins[g], str(dates[pk])) for g, pk, _ in picks])

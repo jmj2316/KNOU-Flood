@@ -1,9 +1,9 @@
 # KNOU-Flood
 
-Lead-aware, probabilistic LSTM streamflow forecasts for the reanalysis-to-forecast domain shift
-(code, trained weights and per-station results for the paper *"KNOU-Flood: Advancing global streamflow forecasting with lead-aware probabilistic machine learning"*, Minjong Cheon, Korea National Open University; manuscript in preparation).
+Lead-aware, probabilistic LSTM streamflow forecasts driven by physics-based and machine-learning weather forecasts
+(code, trained weights and per-station results for the paper *"KNOU-Flood: Lead-aware probabilistic global streamflow forecasting driven by physics-based and machine-learning weather forecasts"*, Minjong Cheon, Korea National Open University).
 
-KNOU-Flood extends the AIFL recipe (ERA5-Land pre-training, forecast fine-tuning, single-layer LSTM) with a 424-day input window, lead-aware forecast inputs from ECMWF HRES and GraphCast, and a probabilistic output (latent-noise ensemble trained with the fair CRPS, dropout kept active at inference). The AIFL code is not public, so the repository also contains our re-implementation of its recipe (the *AIFL-recipe baseline*) trained under identical data, stations, splits and metrics.
+KNOU-Flood forecasts daily streamflow at gauged stations worldwide 1-10 days ahead. A single-layer LSTM is pre-trained on ERA5-Land and fine-tuned on forecasts; it receives lead-aware inputs from ECMWF HRES and GraphCast over a 424-day window and produces an ensemble from latent noise trained with the fair CRPS (dropout kept active at inference). The repository also contains the deterministic two-stage LSTM baseline used in the paper, which follows the recipe of Taccari et al. (2026, J. Hydrol. 678, 136064) and is trained under identical data, stations, splits and metrics.
 
 ## Layout
 ```
@@ -34,7 +34,7 @@ python src/train.py --name s424fsm_s1 --arch single --L 424 --hidden 256 --noise
        --fusion --ft mix --pre_ckpt ckpt/s424_s1_pre.pt --ft_epochs 30 --ft_upd 1500 --split test --gc_window --track hres --bs 512 --dev cuda
 ```
 Variants: `--tw_lambda 1.0 --tw_q 0.9` (tail-weighted CRPS), no `--fusion` (HRES only), `--fusion --fusion_mode nodiff` (no GraphCast-minus-HRES channels), `--holdout_frac 0.2` (spatial block hold-out).
-AIFL-recipe baseline (180-day window, deterministic, lead-1 forecasts in all steps; both protocols are evaluated):
+Baseline (two-stage LSTM, 180-day window, deterministic, lead-1 forecasts in all steps; both protocols are evaluated):
 ```
 python src/train.py --name b2d --track hres --ft lt --hidden 256 --seed 0 --pre_epochs 60 --pre_upd 3000 --ft_epochs 30 --ft_upd 1500 \
        --eval_traj --split test --gc_window --bs 512 --dev cuda        # --hidden 1024 for the larger control
@@ -47,19 +47,27 @@ python scripts/paired.py results/A_perbasin.npz results/B_perbasin.npz traj 2000
 python scripts/compare_seeds.py s424fsm_s0,s424fsm_s1,s424fsm_s2 b2d_gct,b2d_s1,b2d_s2
 python scripts/prob_eval.py 0,1,2 ; python scripts/event_members.py 0,1,2 ; python scripts/event_report.py ; python scripts/tw_eval.py 0,1,2
 ```
-Protocols: *AIFL protocol* (lead-k forecast in every input step) = `lt<k>_*` keys; *operational protocol* (lead-1 forecasts in the past, lead-j forecast for forecast day t+j) = `traj<j>_*` keys in `results/*_perbasin.npz`.
+Protocols: *full-window protocol* (lead-k forecast in every input step) = `lt<k>_*` keys; *operational protocol* (lead-1 forecasts in the past, lead-j forecast for forecast day t+j) = `traj<j>_*` keys in `results/*_perbasin.npz`.
 
-## Main results (test 2021-2023, about 2,100 stations, three seeds; median KGE', operational protocol)
+## Figures
+Every figure of the paper (vector PDF and 300-dpi PNG) and the graphical abstract are written to `$KNOU_FLOOD_FIGS` (default `figs/`):
+```
+python scripts/make_arch_fig_v2.py ; python scripts/make_overview_figs.py ; python scripts/make_figs.py ; python scripts/make_figs2.py
+python scripts/make_protocol_fig.py ; python scripts/make_prob_figs.py ; python scripts/make_event_figs.py
+python scripts/make_cases.py ; python scripts/make_event_cases.py ; python scripts/make_graphical_abstract.py
+```
+
+## Main results (test 2021-2023, about 2,100 stations, three seeds; median KGE (modified Kling-Gupta efficiency), operational protocol)
 | | LT1 | LT5 | LT10 |
 |---|---|---|---|
 | KNOU-Flood | 0.655 | 0.550 | 0.481 |
-| AIFL-recipe baseline | 0.618 | 0.459 | 0.340 |
+| Baseline (two-stage LSTM) | 0.618 | 0.459 | 0.340 |
 
-Model names in `weights/` and `results/`: `s424fsm_s{0,1,2}` = KNOU-Flood (seed 0 is pre-trained as `m1d_L424v`), `tw_s*` = tail-weighted variant, `b2d*` = AIFL-recipe baseline (`b2d_gct`, `b2d_s1`, `b2d_s2` are the three seeds scored on the test window; `b2d_ft/b2d_s1_ft/b2d_s2_ft` their weights), `abl_nodiff_s*`, `abl_nofus_s*` = ablations, `ho_*` = spatial hold-out.
+Model names in `weights/` and `results/`: `s424fsm_s{0,1,2}` = KNOU-Flood (seed 0 is pre-trained as `m1d_L424v`), `tw_s*` = tail-weighted variant, `b2d*` = baseline (`b2d_gct`, `b2d_s1`, `b2d_s2` are the three seeds scored on the test window; `b2d_ft/b2d_s1_ft/b2d_s2_ft` their weights), `abl_nodiff_s*`, `abl_nofus_s*` = ablations, `ho_*` = spatial hold-out.
 
 ## Notes
 * The scripts were written for the paper's cluster; paths are relative to `KNOU_FLOOD_ROOT`, but the job queue and monitoring helpers are not included.
-* Absolute scores are not comparable with the published AIFL numbers (different station list, period and training budget); see the paper.
+* Absolute scores are not comparable with the numbers published by Taccari et al. (2026) (different station list, period and training budget); see the paper.
 * License: to be specified before the public release.
 
 ## License
